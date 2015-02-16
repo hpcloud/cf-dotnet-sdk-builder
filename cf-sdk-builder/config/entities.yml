@@ -1,0 +1,13 @@
+---
+excluded_methods:
+  #- get_all_feature_flags
+  #- list_all_matching_resources
+classes:
+  App:
+    - creating_an_app
+    - list_all_apps
+  Job:
+    - retrieve_job_that_was_successful
+    - retrieve_job_with_known_failure
+    - retrieve_job_with_unknown_failure
+    - retrieve_job_that_is_queued
