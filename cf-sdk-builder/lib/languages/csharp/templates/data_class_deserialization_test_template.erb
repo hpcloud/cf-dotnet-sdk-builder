@@ -1,0 +1,59 @@
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using cf_net_sdk.Client.Data;
+using cf_net_sdk;
+
+namespace cf_net_sdk_test.Deserialization
+{
+    [TestClass]
+    public class <%= endpoint.name.pretty_name %>Test
+    {
+<% data_classes["responses"].each do |data_class, body| %>
+    <% json_body = JSON.parse(body)
+    paged = !json_body["total_pages"].nil? %>
+        [TestMethod]
+        public void Test<%= data_class.name %>()
+        {
+            string json = @"<%= body.gsub "\"", "\"\"" %>";
+    <% if paged %>
+            PagedResponse<<%= data_class.name %>> page = Util.DeserializePage<<%= data_class.name %>>(json);
+        <% json_body.each do |key, value|%>
+            <% if !(value.is_a? Hash) && !(value.is_a? Array) %>Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(page.Properties.<%= key.pretty_name %>), true);<% end %>
+        <% end %>
+            <% i = 0
+               json_body["resources"].each do |resource| %>
+            <% if resource["metadata"]
+                 resource["metadata"].each do |key, value|%>
+                <% if !(value.is_a? Hash) && !(value.is_a? Array) %>Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(page[<%= i %>].EntityMetadata.<%= key.pretty_name %>), true);<% end
+                end
+            end
+            if resource["entity"]
+               resource["entity"].each do |key, value|%>
+                  <% if !(value.is_a? Hash) && !(value.is_a? Array) %>Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(page[<%= i %>].<%= key.pretty_name %>), true);<% end
+               end
+            end
+            resource.each do |key, value|%>
+               <% if !(value.is_a? Hash) && !(value.is_a? Array) %>Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(page[<%= i %>].<%= key.pretty_name %>), true);<% end
+            end
+            i=i+1%>
+            <% end %>
+    <% else %>
+            <%= data_class.name %> obj = Util.DeserializeJson<<%= data_class.name %>>(json);
+        <% if json_body["metadata"]
+        json_body["metadata"].each do |key, value|%>
+            <% if !(value.is_a? Hash) && !(value.is_a? Array) %>Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(obj.EntityMetadata.<%= key.pretty_name %>), true);<% end
+           end
+        end
+        if json_body["entity"]
+          json_body["entity"].each do |key, value|%>
+            <% if !(value.is_a? Hash) && !(value.is_a? Array) %>Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(obj.<%= key.pretty_name %>), true);<% end
+          end
+        end
+        json_body.each do |key, value|%>
+            <% if !(value.is_a? Hash) && !(value.is_a? Array) %>Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(obj.<%= key.pretty_name %>), true);<% end
+        end
+      end %>
+        }
+<% end %>
+    }
+}

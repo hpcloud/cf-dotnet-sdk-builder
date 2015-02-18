@@ -12,8 +12,12 @@ module SDKBuilder
       ERB.new(IO.read(File.expand_path('../templates/data_class_template.erb', __FILE__)))
     end
 
-    def data_class_test_template
-      ERB.new(IO.read(File.expand_path('../templates/data_class_test_template.erb', __FILE__)))
+    def data_class_deserialization_test_template
+      ERB.new(IO.read(File.expand_path('../templates/data_class_deserialization_test_template.erb', __FILE__)))
+    end
+
+    def data_class_serialization_test_template
+      ERB.new(IO.read(File.expand_path('../templates/data_class_serialization_test_template.erb', __FILE__)))
     end
 
     def file_extension

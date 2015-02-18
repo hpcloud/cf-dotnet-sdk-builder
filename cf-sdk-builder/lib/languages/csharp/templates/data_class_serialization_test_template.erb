@@ -1,0 +1,36 @@
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using cf_net_sdk.Client.Data;
+using cf_net_sdk;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+
+namespace cf_net_sdk_test.Serialization
+{
+    [TestClass]
+    public class <%= endpoint.name.pretty_name %>Test
+    {
+<% data_classes["requests"].each do |data_class, body| %>
+    <% json_body = JSON.parse(body)
+       next if json_body.length == 0 %>
+        [TestMethod]
+        public void Test<%= data_class.name %>()
+        {
+            string json = @"<%= body.gsub "\"", "\"\"" %>";
+            <%= data_class.name %> request = new <%= data_class.name %>();
+       <% json_body.each do |key, value|
+         if (value.is_a? Hash) then %>
+            request.<%= key.pretty_name %> = TestUtil.GetJsonDictonary(@"<%= value.to_json.gsub "\"", "\"\"" %>");
+         <% elsif (value.is_a? Array) then %>
+            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (Dictionary<string, dynamic>)p));
+         <% else
+              if (value.is_a? Fixnum) || (value.is_a? Integer) || (value.is_a? Float) || (!!value == value) then val = value
+              elsif (value.is_guid?) then val = "new Guid(\"#{value}\")"
+              else val = "\"#{value}\"" end%>
+            request.<%= key.pretty_name %> = <%= val %>;<% end end %>
+            string result = JsonConvert.SerializeObject(request, Formatting.None);
+            Assert.AreEqual(result, TestUtil.ToUnformatedJsonString(json));
+        }
+<% end %>
+    }
+}
