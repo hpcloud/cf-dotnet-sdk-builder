@@ -17,6 +17,7 @@ using CloudFoundry.Common;
 using CloudFoundry.Common.ServiceLocation;
 using Newtonsoft.Json;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -25,6 +26,7 @@ using System.Threading.Tasks;
 
 namespace CloudFoundry.CloudController.V2.Client
 {
+    [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
     public class <%= endpoint.name.pretty_name %>Endpoint: BaseEndpoint
     {
         public <%= endpoint.name.pretty_name %>Endpoint(CloudfoundryClient client)
@@ -76,7 +78,7 @@ namespace CloudFoundry.CloudController.V2.Client
         <% if method.request["request_body"] %>
             client.Content = JsonConvert.SerializeObject(value).ConvertToStream();
         <% end %>
-            var response = await client.SendAsync();
+            var response = await this.SendAsync(client);
         <%if method.return %>
             <% if method.return.is_array %>
             return Util.DeserializePage<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync());
