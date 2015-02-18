@@ -1,8 +1,1 @@
 cf-sdk-builder/api
-bin/
-obj/
-debug/
-/packages/
-*.v12.suo
-*.csproj.user
-.idea
