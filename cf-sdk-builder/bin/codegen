@@ -1,0 +1,186 @@
+#!ruby
+
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../../Gemfile", __FILE__)
+
+require 'bundler/setup'
+require 'json'
+require 'erb'
+require 'yaml'
+require 'nokogiri'
+require 'nori'
+require 'fileutils'
+require 'interface'
+require 'logger'
+require 'slop'
+
+require_relative '../lib/config'
+require_relative '../lib/extensions'
+require_relative '../lib/endpoint'
+require_relative '../lib/method'
+require_relative '../lib/parameter'
+require_relative '../lib/data_class'
+
+require_relative '../lib/languages/base_language'
+
+require_relative '../lib/languages/csharp/csharp_types'
+require_relative '../lib/languages/go/go_types'
+require_relative '../lib/languages/csharp/csharp'
+require_relative '../lib/languages/go/go'
+
+require_relative '../lib/services/base_service'
+
+require_relative '../lib/services/cloudfoundry/cloudfoundry'
+require_relative '../lib/services/openstack/openstack'
+require_relative '../lib/services/openstack/wadl_parser'
+
+EXIT_CODE_OK = 0
+EXIT_CODE_BAD_USAGE = 1
+EXIT_CODE_BAD_LANGUAGE = 2
+EXIT_CODE_BAD_SERVICE = 3
+EXIT_CODE_BAD_OUT_DIR = 4
+EXIT_CODE_BAD_DATA_DIR = 5
+
+opts = Slop.parse({:strict => true, :help => true}) do
+  banner 'Usage: codegen [options]'
+
+  on 'i', 'in=', 'Required. Specifies base folder for input service data.'
+  on 'o', 'out=', 'Required. Specifies the folder where the source code will be generated.'
+  on 'l', 'language=', 'Required. Specifies the language of the generated code: csharp/go.'
+  on 's', 'service=', 'Required. Specifies the service you want to generate code for: cloudfoundry/openstack.'
+  on 'f', 'logfile=', 'Optional. A file in which to log messages. Will print to stdout if not specified.'
+  on "t", "tests", 'Generate only test classes'
+end
+
+if opts.logfile?
+  $log = Logger.new(opts[:logfile])
+else
+  $log = Logger.new(STDOUT)
+end
+
+unless opts.language? and opts.service? and opts.in? and opts.out?
+  puts opts
+  exit EXIT_CODE_BAD_USAGE
+end
+
+
+case opts[:language]
+  when 'csharp', 'go'
+    SDKBuilder::Config.language = opts[:language]
+  else
+    $log.fatal("Invalid language specified. Valid options are 'csharp' and 'go'")
+    exit EXIT_CODE_BAD_LANGUAGE
+end
+
+$log.info("Language generation set to '#{opts[:language]}'")
+
+case opts[:service]
+  when 'cloudfoundry', 'openstack'
+    SDKBuilder::Config.service = opts[:service]
+  else
+    $log.fatal("Invalid service specified. Valid options are 'cloudfoundry' and 'openstack'")
+    exit EXIT_CODE_BAD_SERVICE
+end
+
+$log.info("Will generate code for '#{opts[:service]}'")
+
+if Dir.exist?(opts[:in])
+  SDKBuilder::Config.in_dir = opts[:in]
+  $log.info("Will parse input data from '#{SDKBuilder::Config.in_dir}'")
+else
+  $log.fatal("Can't find directory '#{opts[:in]}'")
+end
+
+unless Dir.exist?(opts[:out])
+  begin
+    $log.info("Setting up output directory '#{opts[:out]}'.")
+    FileUtils.mkdir_p(opts[:out])
+  rescue Exception => e
+    $log.fatal("Can't create directory '#{opts[:out]}'. #{e.to_s}")
+    exit EXIT_CODE_BAD_OUT_DIR
+  end
+end
+
+SDKBuilder::Config.out_dir = opts[:out]
+
+begin
+  data_dir = File.join(SDKBuilder::Config.out_dir, SDKBuilder::Config.language.data_directory)
+  $log.info("Setting up data directory '#{data_dir}'.")
+  FileUtils.mkdir_p(data_dir)
+rescue Exception => e
+  $log.fatal("Can't create directory '#{opts[:out]}'. #{e.to_s}")
+  exit EXIT_CODE_BAD_DATA_DIR
+end
+
+$log.info("Will write source files in directory '#{SDKBuilder::Config.out_dir}'")
+
+entities = SDKBuilder::Config.service.compile_endpoints
+class_template = SDKBuilder::Config.language.class_template
+data_class_template = SDKBuilder::Config.language.data_class_template
+ext = SDKBuilder::Config.language.file_extension
+
+entities.each do |name, endpoint|
+
+  $log.info("> Processing endpoint '#{name}'")
+
+  unless opts[:tests]
+    File.open(File.join(SDKBuilder::Config.out_dir, "#{name.pretty_name}.#{ext}"), 'w') do |f|
+      f.write class_template.result(binding)
+    end
+  end
+
+  data_classes = {}
+  data_classes["requests"] = {}
+  data_classes["responses"] = {}
+
+  endpoint.methods.each do |method|
+
+    if SDKBuilder::Config.entities["excluded_methods"].include? method.name
+      $log.info("---> Skipping method '#{method.name}'")
+      next
+    end
+
+    $log.info("---> Processing method '#{method.name}'")
+
+    param_types = method.parameters.map {|p| p.type}
+
+    if method.return
+      param_types << method.return.type
+    end
+
+    param_types.each do |data_class|
+      if data_class
+        # TODO: vladi: I don't remember why this is here - should it include all base types for a language?
+        next if %w(int? string Guid? dynamic bool?).include? data_class.name
+
+        if data_class.name.end_with? "Request" then
+          data_classes["requests"][data_class] = method.request["request_body"]
+        else
+          data_classes["responses"][data_class] = method.request["response_body"]
+        end
+
+        unless opts[:tests]
+          File.open(File.join(data_dir, "DC_#{data_class.name}.#{ext}"), 'w') do |f|
+            f.write data_class_template.result(binding)
+          end
+        end
+      end
+    end
+  end
+
+  if opts[:tests]
+    tests_dir = File.join(SDKBuilder::Config.out_dir, SDKBuilder::Config.language.test_directory)
+    $log.info("Setting up test directory '#{tests_dir}'.")
+    serialization_test_dir = File.join(tests_dir, "Serialization")
+    deserialization_test_dir = File.join(tests_dir, "Deserialization")
+    FileUtils.mkdir_p(serialization_test_dir)
+    FileUtils.mkdir_p(deserialization_test_dir)
+    File.open(File.join(deserialization_test_dir, "Test_#{name}.#{ext}"), 'w') do |f|
+      f.write SDKBuilder::Config.language.data_class_deserialization_test_template.result(binding)
+    end
+    File.open(File.join(serialization_test_dir, "Test_#{name}.#{ext}"), 'w') do |f|
+      f.write SDKBuilder::Config.language.data_class_serialization_test_template.result(binding)
+    end
+  end
+end
+
+exit EXIT_CODE_OK
