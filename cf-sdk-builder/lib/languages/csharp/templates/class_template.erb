@@ -29,7 +29,7 @@ namespace CloudFoundry.CloudController.V2.Client
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
     public class <%= endpoint.name.pretty_name %>Endpoint: BaseEndpoint
     {
-        public <%= endpoint.name.pretty_name %>Endpoint(CloudfoundryClient client)
+        public <%= endpoint.name.pretty_name %>Endpoint(CloudFoundryClient client)
         {
             this.CloudTarget = client.CloudTarget;
             this.CancellationToken = client.CancellationToken;
