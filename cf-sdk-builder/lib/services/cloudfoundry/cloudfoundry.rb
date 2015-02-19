@@ -23,7 +23,13 @@ module SDKBuilder
         action_example = parser.parse(doc.to_s)['example'] 
         f.close
 
-        next unless SDKBuilder::Config.service_versions.any? {|version| action_example['route'].start_with? "/#{version}" }
+        version_ok = SDKBuilder::Config.service_versions.any? {|version| action_example['route'].start_with? "/#{version}" }
+
+        if version_ok
+          $log.info("CF: Version ok for route: '#{action_example['route']}'")
+        else
+          $log.info("CF: [Ignored] Version not included for route: '#{action_example['route']}'")
+        end
 
         hash[action_name] = action_example
 

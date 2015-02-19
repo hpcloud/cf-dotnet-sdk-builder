@@ -82,7 +82,8 @@ case opts[:service]
     exit EXIT_CODE_BAD_SERVICE
 end
 
-$log.info("Will generate code for '#{opts[:service]}'")
+SDKBuilder::Config.service_versions = opts[:versions]
+$log.info("Will generate code for versions '#{SDKBuilder::Config.service_versions}'")
 
 if Dir.exist?(opts[:in])
   SDKBuilder::Config.in_dir = opts[:in]

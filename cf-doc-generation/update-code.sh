@@ -23,6 +23,9 @@ cd ${DIR}/../cloud_controller_ng
 # We can't run the db:create rake task, since it doesn't run mysql properly
 `mysql -e "create database cc_test;" -u root --password=password`
 
+# Remove existing api dir
+rm -rf ${DIR}/../cloud_controller_ng/doc/api/
+
 mv -f ${DIR}/../cloud_controller_ng/spec/api/documentation/templates/rspec_api_documentation/html_example.mustache ${DIR}/html_example.mustache.bk
 cp ${DIR}/html_example.mustache ${DIR}/../cloud_controller_ng/spec/api/documentation/templates/rspec_api_documentation/
 
@@ -31,7 +34,7 @@ bundle exec rake ${TASKS}
 mv -f ${DIR}/html_example.mustache.bk ${DIR}/../cloud_controller_ng/spec/api/documentation/templates/rspec_api_documentation/html_example.mustache
 
 # Delete existing auto-generated C# classes
-rm -rf ${DIR}/../cf-net-sdk-pcl/Client/**
+rm -rf ${DIR}/../client/**
 
 # Use codegen to generate C# classes
 export BUNDLE_GEMFILE=${DIR}/../cf-sdk-builder/Gemfile

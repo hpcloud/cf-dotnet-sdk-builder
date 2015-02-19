@@ -35,11 +35,11 @@ module SDKBuilder
     end
 
     def self.service_versions=(versions)
-      Config.service_versions = versions.split(',')
+      Config.instance.service_versions = versions.split(',')
     end
 
     def self.service_versions
-      Config.service_versions
+      Config.instance.service_versions
     end
 
     def self.in_dir=(in_dir)
