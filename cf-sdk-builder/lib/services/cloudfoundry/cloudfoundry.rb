@@ -25,14 +25,14 @@ module SDKBuilder
 
         version_ok = SDKBuilder::Config.service_versions.any? {|version| action_example['route'].start_with? "/#{version}" }
 
-        if version_ok
-          $log.info("CF: Version ok for route: '#{action_example['route']}'")
-        else
+        unless version_ok
           $log.info("CF: [Ignored] Version not included for route: '#{action_example['route']}'")
+          next
         end
 
-        hash[action_name] = action_example
+        $log.info("CF: Version ok for route: '#{action_example['route']}'")
 
+        hash[action_name] = action_example
 
         #make sure arrays are everywhere where expected
         hash.each do |action_name, action|
@@ -60,7 +60,10 @@ module SDKBuilder
     def list_api
       Dir.entries(Config.in_dir).inject({}) do |hash, entry|
         if File.directory? File.join(Config.in_dir, entry) and !(entry =='.' || entry == '..')
-          hash[entry.gsub(/[(|)]/, '_')] = get_actions(entry)
+          actions = get_actions(entry)
+          if actions != nil and actions.size > 0
+            hash[entry.gsub(/[(|)]/, '_')] = actions
+          end
         end
         hash
       end
