@@ -46,14 +46,14 @@ namespace CloudFoundry.CloudController.V2.Client
        method_params = method.parameters.map {|p| "#{p.definition} #{p.name}"}.join ', ' %>
     <% if method.http_method == "GET" %>
         <% if is_paged  %>
-        public async Task<PagedResponse<<%= method.return.definition.chomp('[]') %>>> <%= method.name.pretty_name %>(<%= method_params %>)
+        public async Task<PagedResponseCollection<<%= method.return.definition.chomp('[]') %>>> <%= method.name.pretty_name %>(<%= method_params %>)
         {
             return await <%= method.name.pretty_name %>(<%= method.parameters.length > 0 ? (method.parameters.map {|p| p.name}.join ', ') + ", " : "" %>new RequestOptions());
         }
         <% end %>
     <% end %>
     <% if is_paged %>
-        public async Task<PagedResponse<<%= method.return.definition.chomp('[]') %>>> <%= method.name.pretty_name %>(<%= method_params.length > 0 ? method_params + ", " : "" %>RequestOptions options)
+        public async Task<PagedResponseCollection<<%= method.return.definition.chomp('[]') %>>> <%= method.name.pretty_name %>(<%= method_params.length > 0 ? method_params + ", " : "" %>RequestOptions options)
     <% elsif method.return && method.return.is_array %>
         public async Task<%= "<#{method.return.definition}>" %> <%= method.name.pretty_name %>(<%= method_params %>)
     <% else %>
@@ -83,11 +83,11 @@ namespace CloudFoundry.CloudController.V2.Client
             var response = await this.SendAsync(client);
         <%if method.return %>
             <% if is_paged %>
-            return Util.DeserializePage<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync());
+            return Utilities.DeserializePage<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync());
             <% elsif method.return.is_array %>
-            return Util.DeserializeJsonArray<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync());
+            return Utilities.DeserializeJsonArray<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync());
             <% else %>
-            return Util.DeserializeJson<<%= method.return.definition %>>(await response.ReadContentAsStringAsync());
+            return Utilities.DeserializeJson<<%= method.return.definition %>>(await response.ReadContentAsStringAsync());
             <% end %>
         <% end %>
         }

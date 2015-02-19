@@ -31,7 +31,7 @@ namespace CloudFoundry.CloudController.V2.Deserialization
         {
             string json = @"<%= body.gsub "\"", "\"\"" %>";
     <% if paged %>
-            PagedResponse<<%= data_class.name %>> page = Util.DeserializePage<<%= data_class.name %>>(json);
+            PagedResponseCollection<<%= data_class.name %>> page = Utilities.DeserializePage<<%= data_class.name %>>(json);
         <% json_body.each do |key, value|%>
             <% if !(value.is_a? Hash) && !(value.is_a? Array) %>Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(page.Properties.<%= key.pretty_name %>), true);<% end %>
         <% end %>
@@ -53,7 +53,7 @@ namespace CloudFoundry.CloudController.V2.Deserialization
             i=i+1%>
             <% end %>
     <% else %>
-            <%= data_class.name %> obj = Util.DeserializeJson<<%= data_class.name %>>(json);
+            <%= data_class.name %> obj = Utilities.DeserializeJson<<%= data_class.name %>>(json);
         <% if json_body["metadata"]
         json_body["metadata"].each do |key, value|%>
             <% if !(value.is_a? Hash) && !(value.is_a? Array) %>Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(obj.EntityMetadata.<%= key.pretty_name %>), true);<% end
