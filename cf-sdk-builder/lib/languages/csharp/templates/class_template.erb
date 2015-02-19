@@ -13,8 +13,8 @@
 
 using CloudFoundry.CloudController.V2.Client.Data;
 using CloudFoundry.CloudController.V2.Interfaces;
-using CloudFoundry.Common;
-using CloudFoundry.Common.ServiceLocation;
+using CloudFoundry.CloudController.Common;
+using CloudFoundry.CloudController.Common.ServiceLocation;
 using Newtonsoft.Json;
 using System;
 using System.CodeDom.Compiler;
@@ -42,18 +42,21 @@ namespace CloudFoundry.CloudController.V2.Client
         /// </summary><%(method.explanation || '').lines.each do |line| %>
         /// <%= line.strip %><% end %><%
        next unless method.request
+       is_paged = (method.return != nil) && (method.return.is_array == true) && ((method.request["response_body"] != nil) && (method.request["response_body"]["total_pages"] != nil))
        route_params = SDKBuilder::Method.get_route_params method.route
        method_params = method.parameters.map {|p| "#{p.definition} #{p.name}"}.join ', ' %>
     <% if method.http_method == "GET" %>
-        <% if method.return && method.return.is_array %>
+        <% if is_paged  %>
         public async Task<PagedResponse<<%= method.return.definition.chomp('[]') %>>> <%= method.name.pretty_name %>(<%= method_params %>)
         {
             return await <%= method.name.pretty_name %>(<%= method.parameters.length > 0 ? (method.parameters.map {|p| p.name}.join ', ') + ", " : "" %>new RequestOptions());
         }
         <% end %>
     <% end %>
-    <% if method.return && method.return.is_array %>
+    <% if is_paged %>
         public async Task<PagedResponse<<%= method.return.definition.chomp('[]') %>>> <%= method.name.pretty_name %>(<%= method_params.length > 0 ? method_params + ", " : "" %>RequestOptions options)
+    <% elsif method.return && method.return.is_array %>
+        public async Task<%= "<#{method.return.definition}>" %> <%= method.name.pretty_name %>(<%= method_params %>)
     <% else %>
         public async Task<%= method.return ? "<#{method.return.definition}>" : "" %> <%= method.name.pretty_name %>(<%= method_params %>)
     <% end %>
@@ -62,7 +65,7 @@ namespace CloudFoundry.CloudController.V2.Client
         <%else%>
             string route = "<%= method.route %>";
         <%end%>
-            <% if method.return && method.return.is_array %>
+            <% if is_paged %>
             string endpoint = this.CloudTarget.ToString().TrimEnd('/') + route + options.ToString();
             <% else %>
             string endpoint = this.CloudTarget.ToString().TrimEnd('/') + route;
@@ -80,8 +83,10 @@ namespace CloudFoundry.CloudController.V2.Client
         <% end %>
             var response = await this.SendAsync(client);
         <%if method.return %>
-            <% if method.return.is_array %>
+            <% if is_paged %>
             return Util.DeserializePage<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync());
+            <% elsif method.return.is_array %>
+            return Util.DeserializeJsonArray<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync());
             <% else %>
             return Util.DeserializeJson<<%= method.return.definition %>>(await response.ReadContentAsStringAsync());
             <% end %>
