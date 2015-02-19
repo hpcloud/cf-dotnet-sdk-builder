@@ -48,6 +48,7 @@ opts = Slop.parse({:strict => true, :help => true}) do
   on 'l', 'language=', 'Required. Specifies the language of the generated code: csharp/go.'
   on 's', 'service=', 'Required. Specifies the service you want to generate code for: cloudfoundry/openstack.'
   on 'f', 'logfile=', 'Optional. A file in which to log messages. Will print to stdout if not specified.'
+  on 'w', 'versions=', 'Optional. A comma separated list of the service versions to be included in the generated code.'
   on "t", "tests", 'Generate only test classes'
 end
 

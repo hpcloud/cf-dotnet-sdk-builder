@@ -20,8 +20,12 @@ module SDKBuilder
         action_name = File.basename(file, '.html')
         f = File.open(file)
         doc = Nokogiri::XML(f)
-        hash[action_name] = parser.parse(doc.to_s)['example']
+        action_example = parser.parse(doc.to_s)['example'] 
         f.close
+
+        next unless SDKBuilder::Config.service_versions.any? {|version| action_example['route'].start_with? "/#{version}" }
+
+        hash[action_name] = action_example
 
 
         #make sure arrays are everywhere where expected

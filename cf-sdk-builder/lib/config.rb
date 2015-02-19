@@ -5,7 +5,7 @@ module SDKBuilder
     include Singleton
 
     attr_reader :entities, :dictionary
-    attr_accessor :language, :service, :in_dir, :out_dir
+    attr_accessor :language, :service, :in_dir, :out_dir, :service_versions
 
     def self.config_dir
       File.expand_path('../../config/', __FILE__)
@@ -32,6 +32,14 @@ module SDKBuilder
         else
           raise "Invalid service '#{Config.instance.openstack}'."
       end
+    end
+
+    def self.service_versions=(versions)
+      Config.service_versions = versions.split(',')
+    end
+
+    def self.service_versions
+      Config.service_versions
     end
 
     def self.in_dir=(in_dir)
