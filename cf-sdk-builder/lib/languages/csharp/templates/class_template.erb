@@ -20,10 +20,20 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+
 namespace CloudFoundry.CloudController.V2.Client
 {
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
-    public class <%= endpoint.name.pretty_name %>Endpoint : BaseEndpoint
+    public partial class <%= endpoint.name.pretty_name %>Endpoint : CloudFoundry.CloudController.V2.Client.Base.<%= endpoint.name.pretty_name %>Endpoint
+    {
+    }
+}
+
+namespace CloudFoundry.CloudController.V2.Client.Base
+{
+
+    [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
+    public abstract class <%= endpoint.name.pretty_name %>Endpoint : BaseEndpoint
     {
         public <%= endpoint.name.pretty_name %>Endpoint(CloudFoundryClient client)
         {
