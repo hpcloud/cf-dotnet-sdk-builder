@@ -26,6 +26,13 @@ namespace CloudFoundry.CloudController.V2.Client
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
     public partial class <%= endpoint.name.pretty_name %>Endpoint : CloudFoundry.CloudController.V2.Client.Base.<%= endpoint.name.pretty_name %>Endpoint
     {
+        public <%= endpoint.name.pretty_name %>Endpoint(CloudFoundryClient client) : base()
+        {
+            this.CloudTarget = client.CloudTarget;
+            this.CancellationToken = client.CancellationToken;
+            this.ServiceLocator = client.ServiceLocator;
+            this.Auth = client.Auth;
+        }    
     }
 }
 
@@ -34,14 +41,7 @@ namespace CloudFoundry.CloudController.V2.Client.Base
 
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
     public abstract class <%= endpoint.name.pretty_name %>Endpoint : BaseEndpoint
-    {
-        public <%= endpoint.name.pretty_name %>Endpoint(CloudFoundryClient client)
-        {
-            this.CloudTarget = client.CloudTarget;
-            this.CancellationToken = client.CancellationToken;
-            this.ServiceLocator = client.ServiceLocator;
-            this.Auth = client.Auth;
-        }<% endpoint.methods.each do |method| %>
+    {<% endpoint.methods.each do |method| %>
 
         /// <summary>
         /// <%= method.description %>
