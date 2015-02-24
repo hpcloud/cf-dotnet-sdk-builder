@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace CloudFoundry.CloudController.V2.Client
 {
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
-    public partial class <%= endpoint.name.pretty_name %>Endpoint : CloudFoundry.CloudController.V2.Client.Base.<%= endpoint.name.pretty_name %>Endpoint
+    public partial class <%= endpoint.name.pretty_name %>Endpoint : CloudFoundry.CloudController.V2.Client.Base.Abstract<%= endpoint.name.pretty_name %>Endpoint
     {
         public <%= endpoint.name.pretty_name %>Endpoint(CloudFoundryClient client) : base()
         {
@@ -40,7 +40,7 @@ namespace CloudFoundry.CloudController.V2.Client.Base
 {
 
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
-    public abstract class <%= endpoint.name.pretty_name %>Endpoint : BaseEndpoint
+    public abstract class Abstract<%= endpoint.name.pretty_name %>Endpoint : BaseEndpoint
     {<% endpoint.methods.each do |method| %>
 
         /// <summary>
