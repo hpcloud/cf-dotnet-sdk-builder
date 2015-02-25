@@ -11,6 +11,7 @@ module SDKBuilder
       # TODO: vladi: figure out if we need a description here
       @description = ''
       raw_endpoint.keys.each do |method|
+        next if raw_endpoint[method]["route"].start_with?('/v3')
         methods.push(SDKBuilder::Method.new(method, self, raw_endpoint[method]))
       end
     end
