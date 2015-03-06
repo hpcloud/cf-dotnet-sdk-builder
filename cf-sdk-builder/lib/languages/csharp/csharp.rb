@@ -67,7 +67,10 @@ module SDKBuilder
     def data_class_prefix
       'DataClass'
     end
-
+	
+    def release_version
+      '195'
+    end
     implements LANGUAGE
   end
 end

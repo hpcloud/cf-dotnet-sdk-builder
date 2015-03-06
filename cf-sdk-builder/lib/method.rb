@@ -45,13 +45,16 @@ module SDKBuilder
       fields = {}
       if @raw && @raw['fields'] && @raw['fields']['field']
         @raw['fields']['field'].each do |field|
+          f = {}
+          f[:description] = field["description"]
           if field["valid_values"]
-            fields[field["name"]] = Array(field["valid_values"]["valid_value"])[0]
+            f[:value] = Array(field["valid_values"]["valid_value"])[0]
           elsif field["example_values"]
-            fields[field["name"]] = Array(field["example_values"]["example_value"])[0]
+            f[:value] = Array(field["example_values"]["example_value"])[0]
           else
-            fields[field["name"]] = nil
+            f[:value] = nil
           end
+          fields[field["name"]] = f
         end
       end
       fields

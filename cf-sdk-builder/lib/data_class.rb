@@ -1,7 +1,7 @@
 module SDKBuilder
   class DataClass
 
-    attr_reader :description, :properties, :name
+    attr_reader :description, :properties, :name, :parameter
     $data_class_idx = 0
 
     def initialize(description, parameter, raw_data = nil)
@@ -96,13 +96,21 @@ module SDKBuilder
         end
 
         obj.keys.inject({}) do |hash, key|
-          properties[key] = DataClass.get_simple_type(key, obj[key])
+          property = {}
+          property[:type] = DataClass.get_simple_type(key, obj[key])
+          property[:description] = "The #{(key.pretty_name.split /(?=[A-Z])/).join(" ")}"
+          properties[key] = property
         end
 
         if @parameter.name == 'value'
-          @parameter.method.fields.each do |name, valid_value|
-            unless properties[name]
-              properties[name] = DataClass.get_simple_type(name, valid_value)
+          @parameter.method.fields.each do |name, f|
+             unless properties[name]
+              property = {}
+              property[:type] = DataClass.get_simple_type(name, f[:value])
+              property[:description] = f[:description]
+              properties[name] = property
+            else
+              properties[name][:description] = f[:description]
             end
           end
         end
