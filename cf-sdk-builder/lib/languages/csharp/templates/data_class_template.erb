@@ -19,6 +19,11 @@ using System.Collections.Generic;
 
 namespace CloudFoundry.CloudController.V2.Client.Data
 {
+    /// <summary><% if data_class.name.end_with? "Response" %>
+    /// Data class used for deserializing the <%= "<see cref=\"CloudFoundry.CloudController.V2.Client.#{data_class.parameter.method.endpoint.name.pretty_name}Endpoint.#{data_class.parameter.method.name.pretty_name}()\"" %> Response<% else %>
+    /// Data class used for serializing the <%= "<see cref=\"CloudFoundry.CloudController.V2.Client.#{data_class.parameter.method.endpoint.name.pretty_name}Endpoint.#{data_class.parameter.method.name.pretty_name}()\"" %> Request<% end %>
+    /// <para>For usage information, see online documentation at "<%= "http://apidocs.cloudfoundry.org/#{SDKBuilder::Config.language.release_version}/#{data_class.parameter.method.endpoint.name}/#{data_class.parameter.method.name}.html" %>"</para>
+    /// </summary>
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
     public partial class <%= data_class.name %> : CloudFoundry.CloudController.V2.Client.Data.Base.Abstract<%= data_class.name %>
     {
@@ -30,14 +35,20 @@ namespace CloudFoundry.CloudController.V2.Client.Data.Base
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
     public abstract class Abstract<%= data_class.name %><%= data_class.name.end_with?("Response") ? " : IResponse" : "" %>
     {<% if data_class.name.end_with? "Response" %>
+        /// <summary>
+        /// Contains the Metadata for this Entity
+        /// </summary>
         public Metadata EntityMetadata
         {
             get;
             set;
-        }<% end %><% data_class.properties.each do |name, type| %>
+        }<% end %><% data_class.properties.each do |name, property| %>
 
+        /// <summary>
+        /// <%= property[:description] %>
+        /// </summary>
         [JsonProperty("<%= name %>", NullValueHandling = NullValueHandling.Ignore)]
-        public <%= type %> <%= name.pretty_name %>
+        public <%= property[:type] %> <%= name.pretty_name %>
         {
             get;
             set;
