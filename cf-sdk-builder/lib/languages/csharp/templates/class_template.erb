@@ -31,7 +31,7 @@ namespace CloudFoundry.CloudController.V2.Client
             this.CloudTarget = client.CloudTarget;
             this.CancellationToken = client.CancellationToken;
             this.DependencyLocator = client.DependencyLocator;
-            this.Auth = client.Auth;
+            this.UAAClient = client.UAAClient;
         }    
     }
 }
@@ -68,7 +68,7 @@ if method.http_method == "GET" then if is_paged %>
             var client = this.GetHttpClient();
             client.Uri = new Uri(endpoint);
             client.Method = <%= method.http_method.to_http_method %>;
-            client.Headers.Add(BuildAuthenticationHeader());<%if method.request['request_content_type'] %>
+            client.Headers.Add(await BuildAuthenticationHeader());<%if method.request['request_content_type'] %>
             client.ContentType = "<%= method.request['request_content_type'] %>";<%end%><% if method.request["request_body"] %>
             client.Content = JsonConvert.SerializeObject(value).ConvertToStream();<% end %>
             var expectedReturnStatus = <%= method.request['response_status'] %>;
