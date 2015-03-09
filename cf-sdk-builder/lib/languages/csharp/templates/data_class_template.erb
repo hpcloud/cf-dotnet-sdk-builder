@@ -44,8 +44,8 @@ namespace CloudFoundry.CloudController.V2.Client.Data.Base
             set;
         }<% end %><% data_class.properties.each do |name, property| %>
 
-        /// <summary>
-        /// <%= property[:description] %>
+        /// <summary> <%(property[:description] || '').lines.each do |line| %>
+        /// <para><%= line.strip %></para><% end %>
         /// </summary>
         [JsonProperty("<%= name %>", NullValueHandling = NullValueHandling.Ignore)]
         public <%= property[:type] %> <%= name.pretty_name %>
