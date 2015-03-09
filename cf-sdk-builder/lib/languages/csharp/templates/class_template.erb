@@ -29,12 +29,9 @@ namespace CloudFoundry.CloudController.V2.Client
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
     public partial class <%= endpoint.name.pretty_name %>Endpoint : CloudFoundry.CloudController.V2.Client.Base.Abstract<%= endpoint.name.pretty_name %>Endpoint
     {
-        public <%= endpoint.name.pretty_name %>Endpoint(CloudFoundryClient client) : base()
+        internal <%= endpoint.name.pretty_name %>Endpoint(CloudFoundryClient client) : base()
         {
-            this.CloudTarget = client.CloudTarget;
-            this.CancellationToken = client.CancellationToken;
-            this.DependencyLocator = client.DependencyLocator;
-            this.UAAClient = client.UAAClient;
+            this.Client = client;
         }    
     }
 }
@@ -71,8 +68,8 @@ if method.http_method == "GET" then if is_paged %>
         {<% if route_params.length > 0 %>
             string route = string.Format("<%= SDKBuilder::Method.get_string_format_route method.route %>", <%= route_params.join ', ' %>);<%else%>
             string route = "<%= method.route %>";<%end%><% if is_paged %>
-            string endpoint = this.CloudTarget.ToString().TrimEnd('/') + route + options.ToString();<% else %>
-            string endpoint = this.CloudTarget.ToString().TrimEnd('/') + route;<% end %>
+            string endpoint = this.Client.CloudTarget.ToString().TrimEnd('/') + route + options.ToString();<% else %>
+            string endpoint = this.Client.CloudTarget.ToString().TrimEnd('/') + route;<% end %>
             var client = this.GetHttpClient();
             client.Uri = new Uri(endpoint);
             client.Method = <%= method.http_method.to_http_method %>;
