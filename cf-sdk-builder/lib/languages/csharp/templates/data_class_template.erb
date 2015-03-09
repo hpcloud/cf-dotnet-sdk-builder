@@ -20,8 +20,8 @@ using System.Collections.Generic;
 namespace CloudFoundry.CloudController.V2.Client.Data
 {
     /// <summary><% if data_class.name.end_with? "Response" %>
-    /// Data class used for deserializing the <%= "<see cref=\"CloudFoundry.CloudController.V2.Client.#{data_class.parameter.method.endpoint.name.pretty_name}Endpoint.#{data_class.parameter.method.name.pretty_name}()\"" %> Response<% else %>
-    /// Data class used for serializing the <%= "<see cref=\"CloudFoundry.CloudController.V2.Client.#{data_class.parameter.method.endpoint.name.pretty_name}Endpoint.#{data_class.parameter.method.name.pretty_name}()\"" %> Request<% end %>
+    /// Data class used for deserializing the <%= "\"CloudFoundry.CloudController.V2.Client.#{data_class.parameter.method.endpoint.name.pretty_name}Endpoint.#{data_class.parameter.method.name.pretty_name}()\"" %> Response<% else %>
+    /// Data class used for serializing the <%= "\"CloudFoundry.CloudController.V2.Client.#{data_class.parameter.method.endpoint.name.pretty_name}Endpoint.#{data_class.parameter.method.name.pretty_name}()\"" %> Request<% end %>
     /// <para>For usage information, see online documentation at "<%= "http://apidocs.cloudfoundry.org/#{SDKBuilder::Config.language.release_version}/#{data_class.parameter.method.endpoint.name}/#{data_class.parameter.method.name}.html" %>"</para>
     /// </summary>
     [GeneratedCodeAttribute("cf-sdk-builder", "1.0.0.0")]
