@@ -59,7 +59,7 @@ if method.http_method == "GET" then if is_paged %>
 <% end end %><% if is_paged %>
         /// <summary>
         /// <%= method.description %><%(method.explanation || '').lines.each do |line| %>
-        /// <para><%= line.strip %><% end %></para>
+        /// <para><%= line.strip %></para><% end %>
         /// <para>For detailed information, see online documentation at: "<%= "http://apidocs.cloudfoundry.org/#{SDKBuilder::Config.language.release_version}/#{method.endpoint.name}/#{method.name}.html" %>"</para>
         /// </summary>
         public async Task<PagedResponseCollection<<%= method.return.definition.chomp('[]') %>>> <%= method.name.pretty_name %>(<%= method_params.length > 0 ? method_params + ", " : "" %>RequestOptions options)<% elsif method.return && method.return.is_array %>
