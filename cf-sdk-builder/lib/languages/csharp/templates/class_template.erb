@@ -67,7 +67,7 @@ if method.http_method == "GET" then if is_paged %>
         public async Task<%= "<#{method.return.definition}>" %> <%= method.name.pretty_name %>(<%= method_params %>)<% else %>
         public async Task<%= method.return ? "<#{method.return.definition}>" : "" %> <%= method.name.pretty_name %>(<%= method_params %>)<% end %>
         {
-		    UriBuilder uriBuilder = new UriBuilder(this.Client.CloudTarget);<% if route_params.length > 0 %>
+            UriBuilder uriBuilder = new UriBuilder(this.Client.CloudTarget);<% if route_params.length > 0 %>
             uriBuilder.Path = string.Format(CultureInfo.InvariantCulture, "<%= SDKBuilder::Method.get_string_format_route method.route %>", <%= route_params.join ', ' %>);<%else%>
             uriBuilder.Path = "<%= method.route %>";<%end%><% if is_paged %>
             uriBuilder.Query = options.ToString();<% end %>
