@@ -62,7 +62,7 @@ elsif (value.is_guid?) then val = "new Guid(\"#{value}\")"
 else val = "\"#{value}\"" end%>
             request.<%= key.pretty_name %> = <%= val %>;<% end end end %>
             string result = JsonConvert.SerializeObject(request, Formatting.None);
-            Assert.AreEqual(result, TestUtil.ToUnformatedJsonString(json));
+            Assert.AreEqual(TestUtil.ToUnformatedJsonString(json), result);
         }<% end %>
     }
 }
