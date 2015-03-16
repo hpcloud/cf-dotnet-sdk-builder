@@ -41,3 +41,5 @@ export BUNDLE_GEMFILE=${DIR}/../cf-sdk-builder/Gemfile
 bundle install
 ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../client/ --language csharp --service cloudfoundry --versions v2
 
+# Generate test classes
+ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../tests/ --language csharp --service cloudfoundry --versions v2 -t
