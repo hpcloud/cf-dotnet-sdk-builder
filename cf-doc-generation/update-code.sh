@@ -34,12 +34,12 @@ bundle exec rake ${TASKS}
 mv -f ${DIR}/html_example.mustache.bk ${DIR}/../cloud_controller_ng/spec/api/documentation/templates/rspec_api_documentation/html_example.mustache
 
 # Delete existing auto-generated C# classes
-rm -rf ${DIR}/../client/**
+rm -rf ${DIR}/../Generated/**
 
 # Use codegen to generate C# classes
 export BUNDLE_GEMFILE=${DIR}/../cf-sdk-builder/Gemfile
 bundle install
-ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../client/ --language csharp --service cloudfoundry --versions v2
+ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../Generated/ --language csharp --service cloudfoundry --versions v2
 
 # Generate test classes
 ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../tests/ --language csharp --service cloudfoundry --versions v2 -t
