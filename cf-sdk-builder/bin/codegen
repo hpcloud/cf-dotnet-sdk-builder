@@ -174,13 +174,18 @@ entities.each do |name, endpoint|
     $log.info("Setting up test directory '#{tests_dir}'.")
     serialization_test_dir = File.join(tests_dir, "Serialization")
     deserialization_test_dir = File.join(tests_dir, "Deserialization")
+    fakes_test_dir = File.join(tests_dir, "Fake")
     FileUtils.mkdir_p(serialization_test_dir)
     FileUtils.mkdir_p(deserialization_test_dir)
+    FileUtils.mkdir_p(fakes_test_dir)
     File.open(File.join(deserialization_test_dir, "Test_#{name}.#{ext}"), 'w') do |f|
       f.write SDKBuilder::Config.language.data_class_deserialization_test_template.result(binding)
     end
     File.open(File.join(serialization_test_dir, "Test_#{name}.#{ext}"), 'w') do |f|
       f.write SDKBuilder::Config.language.data_class_serialization_test_template.result(binding)
+    end
+    File.open(File.join(fakes_test_dir, "Test_#{name}.#{ext}"), 'w') do |f|
+      f.write SDKBuilder::Config.language.class_test_template.result(binding)
     end
   end
 end
