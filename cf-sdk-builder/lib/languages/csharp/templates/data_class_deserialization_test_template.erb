@@ -32,7 +32,7 @@ namespace CloudFoundry.CloudController.V2.Test.Deserialization
         {
             string json = @"<%= body.gsub "\"", "\"\"" %>";
 <% if paged %>
-            PagedResponseCollection<<%= data_class.name %>> page = Utilities.DeserializePage<<%= data_class.name %>>(json);
+            PagedResponseCollection<<%= data_class.name %>> page = Utilities.DeserializePage<<%= data_class.name %>>(json, null);
 <% json_body.each do |key, value| if !(value.is_a? Hash) && !(value.is_a? Array) %>
             Assert.AreEqual("<%= value %>", TestUtil.ToTestableString(page.Properties.<%= key.pretty_name %>), true);<% end end
 i = 0

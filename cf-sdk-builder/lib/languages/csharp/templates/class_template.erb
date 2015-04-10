@@ -33,7 +33,7 @@ namespace CloudFoundry.CloudController.V2.Client
         internal <%= endpoint.name.pretty_name %>Endpoint(CloudFoundryClient client) : base()
         {
             this.Client = client;
-        }    
+        }
     }
 }
 
@@ -87,7 +87,7 @@ if method.http_method == "GET" then if is_paged %>
             client.Content = JsonConvert.SerializeObject(value).ConvertToStream();<% end %>
             var expectedReturnStatus = <%= method.request['response_status'] %>;
             var response = await this.SendAsync(client, expectedReturnStatus);<%if method.return then if is_paged %>
-            return Utilities.DeserializePage<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync());<% elsif method.return.is_array %>
+            return Utilities.DeserializePage<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync(), this.Client);<% elsif method.return.is_array %>
             return Utilities.DeserializeJsonArray<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync());<% else %>
             return Utilities.DeserializeJson<<%= method.return.definition %>>(await response.ReadContentAsStringAsync());<% end %><% end %>
         }<% end %>
