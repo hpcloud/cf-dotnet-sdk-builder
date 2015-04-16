@@ -49,14 +49,16 @@ module SDKBuilder
       dict = SDKBuilder::Config.dictionary
       val = str
 
-      val.split(/[_|(|)]/).map do |s|
+      val.split(/[_|(|)]|(?=[A-Z])/).map do |s|
 
         dict.each do |key, value|
           if s.downcase == key.downcase
             s = value
           end
         end
-        s.capitalize
+
+        #capitalize first letter. leave rest untouched
+        s.slice(0,1).capitalize + (s.slice(1..-1) || "")
       end.compact.join('').gsub('-', '').gsub(',','')
     end
 
