@@ -1,0 +1,23 @@
+var util = require('util')
+
+module.exports = function(client) {
+	return {
+<% endpoint.methods.each_with_index do |method, index| 
+route_params = SDKBuilder::Method.get_route_params method.route
+method_params = method.parameters.map {|p| "#{p.name}"}.join ', '
+%>
+		<%= method.name.pretty_name %>: function(callback<%= method_params.length > 0 ? ', '+ method_params : '' %>) {
+			var http_client = require("../http-client.js");
+			http_client.host = client.host;<% if route_params.length > 0 %>
+			http_client.path = util.format("<%= SDKBuilder::Method.get_string_format_route method.route %>", <%= route_params.join ', ' %>);<%else%>
+    		http_client.path = "<%= method.route %>";<%end%>
+			http_client.method = '<%= method.http_method %>';
+			http_client.headers = { "Authorization": client.token };
+			http_client.expectedCode = <%= method.request['response_status'] %>;<% if method.request["request_body"] %>
+    		http_client.body = value;<% end %>
+			var response = http_client.send(callback);
+			return response;
+		}<% unless index == endpoint.methods.size - 1 %>
+		,<% end %><% end %>
+	}
+}

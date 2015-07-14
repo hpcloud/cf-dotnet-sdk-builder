@@ -1,7 +1,7 @@
 module SDKBuilder
-  class CSharp
+  class NodeJs
     def types
-      SDKBuilder::CSharpTypes.new
+      SDKBuilder::NodeJsTypes.new
     end
 
     def class_template
@@ -25,7 +25,7 @@ module SDKBuilder
     end
 
     def file_extension
-      'cs'
+      'js'
     end
 
     def data_directory
@@ -79,11 +79,9 @@ module SDKBuilder
     end
     
     def get_string_format_route(route)
-      idx = -1
       pieces = route.split('/').map do |part|
         if part.start_with?(':')
-          idx = idx + 1
-          "{#{idx}}"
+          "%s"
         else
           part
         end
@@ -91,6 +89,7 @@ module SDKBuilder
 
       pieces.join('/')
     end
+    
     implements LANGUAGE
   end
 end

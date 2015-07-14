@@ -4,6 +4,7 @@ excluded_methods:
   #- list_all_matching_resources
   - "filters_apps_by_guids,_names,_spaces,_and_organizations"
   - "upload_bits_for_a_package_of_type_bits"
+  - "upload_the_bits_for_an_admin_buildpack"
 classes:
   App:
     - creating_an_app

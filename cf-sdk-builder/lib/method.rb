@@ -125,17 +125,7 @@ module SDKBuilder
     end
 
     def self.get_string_format_route(route)
-      idx = -1
-      pieces = route.split('/').map do |part|
-        if part.start_with?(':')
-          idx = idx + 1
-          "{#{idx}}"
-        else
-          part
-        end
-      end
-
-      pieces.join('/')
+      SDKBuilder::Config.language.get_string_format_route(route)
     end
   end
 end

@@ -26,6 +26,8 @@ require_relative '../lib/languages/csharp/csharp_types'
 require_relative '../lib/languages/go/go_types'
 require_relative '../lib/languages/csharp/csharp'
 require_relative '../lib/languages/go/go'
+require_relative '../lib/languages/nodejs/nodejs_types'
+require_relative '../lib/languages/nodejs/nodejs'
 
 require_relative '../lib/services/base_service'
 
@@ -65,10 +67,10 @@ end
 
 
 case opts[:language]
-  when 'csharp', 'go'
+  when 'csharp', 'go', 'nodejs'
     SDKBuilder::Config.language = opts[:language]
   else
-    $log.fatal("Invalid language specified. Valid options are 'csharp' and 'go'")
+    $log.fatal("Invalid language specified. Valid options are 'csharp', 'nodejs' and 'go'")
     exit EXIT_CODE_BAD_LANGUAGE
 end
 
@@ -132,10 +134,14 @@ entities.each do |name, endpoint|
     output = File.join(SDKBuilder::Config.out_dir, "#{name.pretty_name}.#{ext}")
   end
 
-  unless opts[:tests]
+  unless (opts[:tests])
     File.open(output, 'w') do |f|
       f.write class_template.result(binding)
     end
+  end
+
+  if opts[:language] == 'nodejs'
+    next
   end
 
   data_classes = {}

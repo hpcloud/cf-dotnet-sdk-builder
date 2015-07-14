@@ -68,6 +68,8 @@ module SDKBuilder
           SDKBuilder::CSharp.new
         when 'go'
           SDKBuilder::Go.new
+        when 'nodejs'
+          SDKBuilder::NodeJs.new
         else
           raise "Invalid language '#{Config.instance.language}'."
       end
