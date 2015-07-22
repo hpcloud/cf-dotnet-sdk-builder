@@ -116,16 +116,24 @@ end
 $log.info("Will write source files in directory '#{SDKBuilder::Config.out_dir}'")
 
 entities = SDKBuilder::Config.service.compile_endpoints
-class_template = SDKBuilder::Config.language.class_template
 data_class_template = SDKBuilder::Config.language.data_class_template
+class_template = SDKBuilder::Config.language.class_template
 ext = SDKBuilder::Config.language.file_extension
 
 entities.each do |name, endpoint|
 
   $log.info("> Processing endpoint '#{name}'")
+  is_v3 = endpoint.methods.any? { |m| m.is_v3? }
+
+  if is_v3
+    output = File.join(SDKBuilder::Config.out_dir, "v3", "#{name.pretty_name}.#{ext}")
+    FileUtils.mkdir_p File.join(SDKBuilder::Config.out_dir, "v3")
+  else
+    output = File.join(SDKBuilder::Config.out_dir, "#{name.pretty_name}.#{ext}")
+  end
 
   unless opts[:tests]
-    File.open(File.join(SDKBuilder::Config.out_dir, "#{name.pretty_name}.#{ext}"), 'w') do |f|
+    File.open(output, 'w') do |f|
       f.write class_template.result(binding)
     end
   end
@@ -142,6 +150,13 @@ entities.each do |name, endpoint|
     end
 
     $log.info("---> Processing method '#{method.name}'")
+
+    if is_v3
+      data_out_dir = File.join(data_dir, "v3")
+      FileUtils.mkdir_p data_out_dir
+    else
+      data_out_dir = data_dir
+    end
 
     param_types = method.parameters.map {|p| p.type}
 
@@ -161,7 +176,7 @@ entities.each do |name, endpoint|
         end
 
         unless opts[:tests]
-          File.open(File.join(data_dir, "DC_#{data_class.name}.#{ext}"), 'w') do |f|
+          File.open(File.join(data_out_dir, "DC_#{data_class.name}.#{ext}"), 'w') do |f|
             f.write data_class_template.result(binding)
           end
         end
@@ -170,7 +185,11 @@ entities.each do |name, endpoint|
   end
 
   if opts[:tests]
-    tests_dir = File.join(SDKBuilder::Config.out_dir, SDKBuilder::Config.language.test_directory)
+    if is_v3
+      tests_dir = File.join(SDKBuilder::Config.out_dir, SDKBuilder::Config.language.test_directory, "v3")
+    else
+      tests_dir = File.join(SDKBuilder::Config.out_dir, SDKBuilder::Config.language.test_directory)
+    end
     $log.info("Setting up test directory '#{tests_dir}'.")
     serialization_test_dir = File.join(tests_dir, "Serialization")
     deserialization_test_dir = File.join(tests_dir, "Deserialization")
