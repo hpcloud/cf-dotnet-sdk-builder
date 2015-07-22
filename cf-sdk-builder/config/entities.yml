@@ -1,7 +1,9 @@
 ---
-excluded_methods: []
+excluded_methods: 
   #- get_all_feature_flags
   #- list_all_matching_resources
+  - "filters_apps_by_guids,_names,_spaces,_and_organizations"
+  - "upload_bits_for_a_package_of_type_bits"
 classes:
   App:
     - creating_an_app

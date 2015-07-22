@@ -32,6 +32,10 @@ module SDKBuilder
       @http_method = @raw['http_method']
     end
 
+    def is_v3?
+      SDKBuilder::Config.service_versions.any? {|version| @route.start_with? "/v3" }
+    end
+
     private
 
     def url_parameters
@@ -69,7 +73,6 @@ module SDKBuilder
 
         if request['response_body']
           response_body = request['response_body']
-
           # TODO: vladi: we need to flag DataClass instances that are incapsulated, so we know how to generate code
           if response_body.is_json?
             obj = JSON.parse(response_body)
@@ -78,7 +81,11 @@ module SDKBuilder
 
             if !obj.is_a?(Array)
               if obj['resources']
-                raw_entity = [obj['resources'].inject(&:deep_merge)['entity']].to_json
+                if is_v3?
+                  raw_entity = obj['resources'].to_json
+                else
+                  raw_entity = [obj['resources'].inject(&:deep_merge)['entity']].to_json
+                end
               elsif obj['entity']
                 raw_entity = obj['entity'].to_json
               end

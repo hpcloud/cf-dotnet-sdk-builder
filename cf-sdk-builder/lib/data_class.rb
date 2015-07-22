@@ -85,6 +85,7 @@ module SDKBuilder
       properties = {}
       if @raw.is_json?
         obj = JSON.parse(@raw)
+
         if obj.is_a?(Array)
           obj = obj.first
         elsif obj.is_a?(Hash)
@@ -95,6 +96,8 @@ module SDKBuilder
           raise "Cannot determine properties for data class '#{@name}'"
         end
 
+        return {} if obj.nil?
+          
         obj.keys.inject({}) do |hash, key|
           property = {}
           property[:type] = DataClass.get_simple_type(key, obj[key])
