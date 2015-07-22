@@ -38,7 +38,7 @@ module SDKBuilder
     private
 
     def self.get_simple_type(name, sample_data = nil)
-      if sample_data
+      if !sample_data.nil?
         if sample_data.is_a?(Hash)
           key_class = DataClass.get_simple_type("HashKey!#{name}", sample_data.keys.first)
 
