@@ -1,6 +1,7 @@
 ---
 the: ""
 creating: "create"
+deleting: "delete"
 updating: "update"
 filtering: "filter"
 particular: ""
