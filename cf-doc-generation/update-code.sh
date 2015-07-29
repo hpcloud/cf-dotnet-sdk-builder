@@ -35,6 +35,7 @@ mv -f ${DIR}/html_example.mustache.bk ${DIR}/../cloud_controller_ng/spec/api/doc
 
 # Delete existing auto-generated C# classes
 rm -rf ${DIR}/../Generated/**
+rm -rf ${DIR}/../tests/**
 
 # Use codegen to generate C# classes
 export BUNDLE_GEMFILE=${DIR}/../cf-sdk-builder/Gemfile
@@ -43,3 +44,9 @@ ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc
 
 # Generate test classes
 ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../tests/ --language csharp --service cloudfoundry --versions v2 -t
+
+# V3
+ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../Generated/ --language csharp --service cloudfoundry --versions v3
+
+# Generate test classes
+ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../tests/ --language csharp --service cloudfoundry --versions v3 -t
