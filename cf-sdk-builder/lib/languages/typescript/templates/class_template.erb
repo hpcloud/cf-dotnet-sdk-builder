@@ -1,0 +1,31 @@
+<% version = if is_v3 then "V3" else "V2" end %>
+import http = require("./../HttpClientModule")
+import ClientData = require("./Data/ClientData")
+var util = require("util")
+
+export module <%= endpoint.name.pretty_name %>{
+   var host:string;
+   var token:string;
+   
+   export class <%= endpoint.name.pretty_name %>Endpoint{
+
+   constructor(target:string, tokenInfo:string){
+     token = tokenInfo;
+     host = target;
+   }
+<% endpoint.methods.each_with_index do |method, index| 
+route_params = SDKBuilder::Method.get_route_params method.route
+method_params = method.parameters.map {|p| (p.definition.end_with?("Request")) ? "#{p.name}:ClientData.Client#{version}Data.#{p.definition}" : "#{p.name}:#{p.definition}" }.join ', '
+%>
+   <%= method.name.pretty_name %>(<%= method_params.length > 0 ? method_params +',' : '' %> callback: Function) { <% if route_params.length > 0 %>
+         var path = util.format("<%= SDKBuilder::Method.get_string_format_route method.route %>", <%= route_params.join ', ' %>);<%else%>
+         var path = "<%= method.route %>";<%end%>
+         var method = '<%= method.http_method %>';
+         var headers = { "Authorization": "bearer " +token };
+         var expectedCode = <%= method.request['response_status'] %>;<% if method.request["request_body"] %>
+         var body = value;<%else%>var body=null;<% end %>
+         var httpClient = new http.HttpClientModule.HttpClient(host, path, method, headers, expectedCode);
+         httpClient.Send(body, callback);
+	}<% unless index == endpoint.methods.size - 1 %>		<% end %><% end %>
+ }
+}
