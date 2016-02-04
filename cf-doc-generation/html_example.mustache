@@ -47,6 +47,27 @@
     {{/ parameters }}
   </parameters>
   {{/ has_parameters? }}
+  {{# has_body_parameters? }}
+  <body_parameters>
+    {{# body_parameters }}
+    <parameter>
+      <name>{{# scope }}{{ scope }}[{{ name }}]{{/ scope }}{{^ scope }}{{ name }}{{/ scope }}</name>
+      <deprecated>{{# deprecated }}true{{/ deprecated }}{{^ deprecated }}false{{/ deprecated }}</deprecated>
+      <description>{{ description }}</description>
+      <valid_values>
+        {{# valid_values }}
+        <valid_value>{{ . }}</valid_value>
+        {{/ valid_values }}
+      </valid_values>
+      <example_values>
+        {{# example_values }}
+        <example_value>{{ . }}</example_value>
+        {{/ example_values }}
+      </example_values>
+    </parameter>
+    {{/ body_parameters }}
+  </body_parameters>
+  {{/ has_body_parameters? }}
   <requests>
     {{# requests }}
     <request>

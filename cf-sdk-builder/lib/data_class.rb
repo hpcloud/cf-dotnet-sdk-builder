@@ -116,6 +116,17 @@ module SDKBuilder
               properties[name][:description] = f[:description]
             end
           end
+
+          @parameter.method.body_parameters.each do |name, f|
+            unless properties[name]
+              property = {}
+              property[:type] = DataClass.get_simple_type(name, f[:value])
+              property[:description] = f[:description]
+              properties[name] = property
+            else
+              properties[name][:description] = f[:description]
+            end
+          end
         end
 
         properties

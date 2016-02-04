@@ -1,6 +1,6 @@
 module SDKBuilder
   class Method
-    attr_reader :name, :description, :parameters, :return, :http_method, :route, :explanation, :request, :endpoint, :fields
+    attr_reader :name, :description, :parameters, :return, :http_method, :route, :explanation, :request, :endpoint, :fields, :body_parameters
 
     def initialize(name, endpoint, raw_method)
       unless name
@@ -13,6 +13,7 @@ module SDKBuilder
 
       @raw = raw_method
       @fields = get_fields
+      @body_parameters = get_body_parameters
       @name = name
       @description = raw_method['description']
       @explanation = raw_method['explanation']
@@ -24,6 +25,10 @@ module SDKBuilder
         @route = raw_method["route"].chomp("/") + "/"
       else
         @route = raw_method["route"].chomp("/")
+      end
+
+      if (@route.end_with?("?"))
+        @route = @route.chomp("?")
       end
 
       @parameters = url_parameters + request_parameters
@@ -62,6 +67,31 @@ module SDKBuilder
         end
       end
       fields
+    end
+
+    def get_body_parameters
+      params = {}
+      if @raw && @raw['body_parameters'] && @raw['body_parameters']['parameter']
+        if @raw['body_parameters']['parameter'].is_a?(Array)
+          body_params = @raw['body_parameters']['parameter']
+        else
+          body_params = [@raw['body_parameters']['parameter']]
+        end
+
+        body_params.each do |para|
+          p = {}
+          p[:description] = para["description"]
+          if para["valid_values"]
+            p[:value] = Array(para["valid_values"]["valid_value"])[0]
+          elsif para["example_values"]
+            p[:value] = Array(para["example_values"]["example_value"])[0]
+          else
+            p[:value] = nil
+          end
+          params[para["name"]] = p
+        end
+      end
+      params
     end
 
     # TODI: vladi: this might need to be return_type
@@ -121,7 +151,19 @@ module SDKBuilder
     end
 
     def self.get_route_params(route)
-      route.split('/').select { |part| part.start_with? ':' }.map { |param| param.gsub(/:/, '') }
+      r = route.split('?')
+
+      path = r[0]
+      query = r[1]
+
+      res = path.split('/').select { |part| part.start_with? ':' }.map { |param| param.gsub(/:/, '') }
+
+      if !query.nil?
+        query_params = query.split('=').select { |part| part.start_with? ':' }.map { |param| param.gsub(/:/, '') }
+        (res << query_params).flatten!
+      end
+
+      return res
     end
 
     def self.get_string_format_route(route)

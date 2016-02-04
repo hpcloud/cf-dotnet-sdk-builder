@@ -41,8 +41,10 @@ is_array = json_body.is_a? Array%>
 <% val.each do |key, value|
 if (value.is_a? Hash) then %>
             request[<%= index %>].<%= key.pretty_name %> = TestUtil.GetJsonDictonary(@"<%= value.to_json.gsub "\"", "\"\"" %>");
-<% elsif (value.is_a? Array) then %>
-            request[<%= index %>].<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (Dictionary<string, dynamic>)p));
+<% elsif (value.is_a? Array) then if value[0].is_a? Integer then %>
+            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (int?)p)); <% elsif value[0].is_a? String then %>
+            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => p.ToString()));<%else%>
+            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (Dictionary<string, dynamic>)p));<%end%>
 <% else
 if (value == nil) then val = "null"
 elsif (value.is_a? Fixnum) || (value.is_a? Integer) || (value.is_a? Float) || (!!value == value) then val = value
@@ -54,8 +56,10 @@ else val = "\"#{value}\"" end%>
 <% json_body.each do |key, value|
 if (value.is_a? Hash) then %>
             request.<%= key.pretty_name %> = TestUtil.GetJsonDictonary(@"<%= value.to_json.gsub "\"", "\"\"" %>");
-<% elsif (value.is_a? Array) then %>
-            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (Dictionary<string, dynamic>)p));
+<% elsif (value.is_a? Array) then if value[0].is_a? Integer then %>
+            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (int?)p)); <% elsif value[0].is_a? String then %>
+            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => p.ToString()));<%else%>
+            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (Dictionary<string, dynamic>)p));<%end%>
 <% else
 if (value == nil) then val = "null"
 elsif (value.is_a? Fixnum) || (value.is_a? Integer) || (value.is_a? Float) || (!!value == value) then val = value

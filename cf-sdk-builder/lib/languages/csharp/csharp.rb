@@ -59,7 +59,7 @@ module SDKBuilder
 
         #capitalize first letter. leave rest untouched
         s.slice(0,1).capitalize + (s.slice(1..-1) || "")
-      end.compact.join('').gsub('-', '').gsub(',','')
+      end.compact.join('').gsub('-', '').gsub(',','').gsub("'", '')
     end
 
     def request_class_suffix
