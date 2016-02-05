@@ -16,6 +16,7 @@ module SDKBuilder
     def get_actions(api)
       dir = File.join(Config.in_dir, api)
       parser = Nori.new
+
       Dir[File.join(dir, '*.html')].inject({}) do |hash, file|
         action_name = File.basename(file, '.html')
         f = File.open(file)
@@ -23,7 +24,7 @@ module SDKBuilder
         action_example = parser.parse(doc.to_s)['example'] 
         f.close
 
-        version_ok = SDKBuilder::Config.service_versions.any? {|version| action_example['route'].start_with? "/#{version}" }
+        version_ok = SDKBuilder::Config.service_versions.any? {|version| action_example['route'][/\A\/?#{version}\//] }
 
         unless version_ok
           $log.info("CF: [Ignored] Version not included for route: '#{action_example['route']}'")
@@ -32,6 +33,9 @@ module SDKBuilder
 
         $log.info("CF: Version ok for route: '#{action_example['route']}'")
 
+        if hash.nil?
+          hash = {}
+        end
         hash[action_name] = action_example
 
         #make sure arrays are everywhere where expected
