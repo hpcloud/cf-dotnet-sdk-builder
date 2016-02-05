@@ -87,7 +87,7 @@ if method.http_method == "GET" then if is_paged %>
                 client.Headers.Add(authHeader);
             }<%if method.request['request_content_type'] %>
             client.ContentType = "<%= method.request['request_content_type'] %>";<%end%><% if method.request["request_body"] %>
-            client.Content = JsonConvert.SerializeObject(value).ConvertToStream();<% end %>
+            client.Content = ((string)JsonConvert.SerializeObject(value)).ConvertToStream();<% end %>
             var expectedReturnStatus = <%= method.request['response_status'] %>;
             var response = await this.SendAsync(client, expectedReturnStatus);<%if method.return then if is_paged %>
             return Utilities.DeserializePage<<%= method.return.definition.chomp('[]') %>>(await response.ReadContentAsStringAsync(), this.Client);<% elsif method.return.is_array %>
