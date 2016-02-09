@@ -38,7 +38,9 @@ module SDKBuilder
     private
 
     def self.get_simple_type(name, sample_data = nil)
-      if !sample_data.nil?
+      if name.end_with? 'guid'
+        return Config.types.guid
+      elsif !sample_data.nil?
         if sample_data.is_a?(Hash)
           key_class = DataClass.get_simple_type("HashKey!#{name}", sample_data.keys.first)
 
@@ -69,13 +71,9 @@ module SDKBuilder
         else
           raise "Cannot determine type for data class '#{name}'. Sample data: '#{sample_data}'"
         end
+      elsif name.end_with? 'index'
+        return Config.types.integer
       else
-        if name.end_with? 'guid'
-          return Config.types.guid
-        elsif name.end_with? 'index'
-          return Config.types.integer
-        end
-
         Config.types.default
       end
     end
