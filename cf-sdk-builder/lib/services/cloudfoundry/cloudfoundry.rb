@@ -21,7 +21,7 @@ module SDKBuilder
         action_name = File.basename(file, '.html')
         f = File.open(file)
         doc = Nokogiri::XML(f)
-        action_example = parser.parse(doc.to_s)['example'] 
+        action_example = parser.parse(doc.to_s.clean_guids)['example']
         f.close
 
         version_ok = SDKBuilder::Config.service_versions.any? {|version| action_example['route'][/\A\/?#{version}\//] }

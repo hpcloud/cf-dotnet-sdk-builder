@@ -38,7 +38,11 @@ module SDKBuilder
     private
 
     def self.get_simple_type(name, sample_data = nil)
-      if !sample_data.nil?
+      if name.end_with? 'guid'
+        return Config.types.guid
+      elsif name.end_with? 'index'
+        return Config.types.integer
+      elsif !sample_data.nil?
         if sample_data.is_a?(Hash)
           key_class = DataClass.get_simple_type("HashKey!#{name}", sample_data.keys.first)
 
@@ -70,12 +74,6 @@ module SDKBuilder
           raise "Cannot determine type for data class '#{name}'. Sample data: '#{sample_data}'"
         end
       else
-        if name.end_with? 'guid'
-          return Config.types.guid
-        elsif name.end_with? 'index'
-          return Config.types.integer
-        end
-
         Config.types.default
       end
     end
@@ -107,24 +105,26 @@ module SDKBuilder
 
         if @parameter.name == 'value'
           @parameter.method.fields.each do |name, f|
-             unless properties[name]
+            prop_name = name.split('[')[0]
+            unless properties[prop_name]
               property = {}
-              property[:type] = DataClass.get_simple_type(name, f[:value])
+              property[:type] = DataClass.get_simple_type(prop_name, f[:value])
               property[:description] = f[:description]
-              properties[name] = property
+              properties[prop_name] = property
             else
-              properties[name][:description] = f[:description]
+              properties[prop_name][:description] = f[:description]
             end
           end
 
           @parameter.method.body_parameters.each do |name, f|
-            unless properties[name]
+            prop_name = name.split('[')[0]
+            unless properties[prop_name]
               property = {}
-              property[:type] = DataClass.get_simple_type(name, f[:value])
+              property[:type] = DataClass.get_simple_type(prop_name, f[:value])
               property[:description] = f[:description]
-              properties[name] = property
+              properties[prop_name] = property
             else
-              properties[name][:description] = f[:description]
+              properties[prop_name][:description] = f[:description]
             end
           end
         end

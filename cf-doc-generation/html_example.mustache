@@ -51,7 +51,7 @@
   <body_parameters>
     {{# body_parameters }}
     <parameter>
-      <name>{{# scope }}{{ scope }}[{{ name }}]{{/ scope }}{{^ scope }}{{ name }}{{/ scope }}</name>
+      <name>{{ name }}</name>
       <deprecated>{{# deprecated }}true{{/ deprecated }}{{^ deprecated }}false{{/ deprecated }}</deprecated>
       <description>{{ description }}</description>
       <valid_values>
