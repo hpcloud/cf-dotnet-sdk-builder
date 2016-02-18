@@ -12,7 +12,7 @@ class String
   end
 
   def is_guid?
-    !!(self =~ /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+    !!(self =~ /^(guid-)?[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
   end
 
   def is_number?
@@ -25,6 +25,11 @@ class String
 
   def to_http_method
     SDKBuilder::Config.language.string_to_http_method(self)
+  end
+
+  def clean_guids
+    self.gsub(/guid-([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})/, '\1')
+        .gsub(/(?<=guid":\s")\S+(?=")/, SecureRandom.uuid)
   end
 end
 

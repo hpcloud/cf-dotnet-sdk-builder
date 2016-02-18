@@ -42,7 +42,7 @@ is_array = json_body.is_a? Array%>
 if (value.is_a? Hash) then %>
             request[<%= index %>].<%= key.pretty_name %> = TestUtil.GetJsonDictonary(@"<%= value.to_json.gsub "\"", "\"\"" %>");
 <% elsif (value.is_a? Array) then if value[0].is_a? Integer then %>
-            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (int?)p)); <% elsif value[0].is_a? String then %>
+            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (int?)Convert.ToInt32(p))); <% elsif value[0].is_a? String then %>
             request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => p.ToString()));<%else%>
             request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (Dictionary<string, dynamic>)p));<%end%>
 <% else
@@ -57,7 +57,7 @@ else val = "\"#{value}\"" end%>
 if (value.is_a? Hash) then %>
             request.<%= key.pretty_name %> = TestUtil.GetJsonDictonary(@"<%= value.to_json.gsub "\"", "\"\"" %>");
 <% elsif (value.is_a? Array) then if value[0].is_a? Integer then %>
-            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (int?)p)); <% elsif value[0].is_a? String then %>
+            request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (int?)Convert.ToInt32(p))); <% elsif value[0].is_a? String then %>
             request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => p.ToString()));<%else%>
             request.<%= key.pretty_name %> = Array.ConvertAll(TestUtil.GetJsonArray(@"<%= value.to_json.gsub "\"", "\"\"" %>"), (p => (Dictionary<string, dynamic>)p));<%end%>
 <% else
