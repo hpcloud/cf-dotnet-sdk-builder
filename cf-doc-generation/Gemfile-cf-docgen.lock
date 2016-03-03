@@ -90,6 +90,7 @@ GEM
     eventmachine (1.0.8)
     excon (0.45.4)
     fakefs (0.6.0)
+    ffi (1.9.10)
     fission (0.5.0)
       CFPropertyList (~> 2.2)
     fluent-logger (0.4.9)
@@ -344,6 +345,8 @@ GEM
     webmock (1.20.4)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
+    win32-eventlog (0.6.5)
+      ffi
     yajl-ruby (1.2.1)
 
 PLATFORMS
@@ -401,7 +404,8 @@ DEPENDENCIES
   vcap-concurrency!
   vcap_common (~> 4.0)
   webmock
+  win32-eventlog
   yajl-ruby
 
 BUNDLED WITH
-   1.10.6
+   1.11.2

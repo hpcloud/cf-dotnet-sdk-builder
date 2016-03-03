@@ -1,3 +1,5 @@
 cf-sdk-builder/api
 client/
 .idea
+Generated
+tests
