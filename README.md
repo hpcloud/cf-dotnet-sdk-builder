@@ -14,11 +14,11 @@
 ## Running the SDK builder
 
 Run the following (note that if you're generating `csharp` output, you can
-ommit the `language` variable):
+omit the `language` variable).
+After the `docker run`, you'll be dropped in a shell.
 
 ```bash
 docker run -v ${PWD}:/root/cf-dotnet-sdk-builder -it helioncf/hcf-sdk-builder
-# You will be dropped in a shell
 language=lisp ./cf-doc-generation/update-code.sh
 ```
 
