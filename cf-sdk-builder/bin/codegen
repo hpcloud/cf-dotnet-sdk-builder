@@ -22,8 +22,10 @@ require_relative '../lib/data_class'
 
 require_relative '../lib/languages/base_language'
 
+require_relative '../lib/languages/angularjs/angularjs_types'
 require_relative '../lib/languages/csharp/csharp_types'
 require_relative '../lib/languages/go/go_types'
+require_relative '../lib/languages/angularjs/angularjs'
 require_relative '../lib/languages/csharp/csharp'
 require_relative '../lib/languages/go/go'
 
@@ -45,7 +47,7 @@ opts = Slop.parse({:strict => true, :help => true}) do
 
   on 'i', 'in=', 'Required. Specifies base folder for input service data.'
   on 'o', 'out=', 'Required. Specifies the folder where the source code will be generated.'
-  on 'l', 'language=', 'Required. Specifies the language of the generated code: csharp/go.'
+  on 'l', 'language=', 'Required. Specifies the language of the generated code: angularjs/csharp/go.'
   on 's', 'service=', 'Required. Specifies the service you want to generate code for: cloudfoundry/openstack.'
   on 'f', 'logfile=', 'Optional. A file in which to log messages. Will print to stdout if not specified.'
   on 'w', 'versions=', 'Optional. A comma separated list of the service versions to be included in the generated code.'
@@ -65,10 +67,10 @@ end
 
 
 case opts[:language]
-  when 'csharp', 'go'
+  when 'angularjs', 'csharp', 'go'
     SDKBuilder::Config.language = opts[:language]
   else
-    $log.fatal("Invalid language specified. Valid options are 'csharp' and 'go'")
+    $log.fatal("Invalid language specified. Valid options are 'angularjs', 'csharp' and 'go'")
     exit EXIT_CODE_BAD_LANGUAGE
 end
 

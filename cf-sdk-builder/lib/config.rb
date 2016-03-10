@@ -64,6 +64,8 @@ module SDKBuilder
 
     def self.language
       case Config.instance.language
+        when 'angularjs'
+          SDKBuilder::AngularJS.new
         when 'csharp'
           SDKBuilder::CSharp.new
         when 'go'

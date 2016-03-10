@@ -1,0 +1,32 @@
+<% version = if is_v3 then "V3" else "V2" end %>
+(function () {
+  'use strict';
+
+  angular
+    .module('cloud-foundry.api')
+    .factory('cloud-foundry.api.<%= endpoint.name.pretty_name %>Service', <%= endpoint.name.pretty_name %>ServiceFactory);
+
+  function <%= endpoint.name.pretty_name %>ServiceFactory() {
+    /* eslint-disable camelcase */
+    function <%= endpoint.name.pretty_name %>Service($http) {
+<% endpoint.methods.each_with_index do |method, index| 
+route_params = SDKBuilder::Method.get_route_params method.route
+method_params = method.parameters.map {|p| ("#{p.name}") }.join ', '
+%>
+      this.<%= method.name.pretty_name %> = function (<%= method_params.length > 0 ? method_params +', ' : '' %>params) {
+        var config = {};
+        config.params = params;<% if route_params.length > 0 %>
+        config.url = "<%= SDKBuilder::AngularJS.get_string_format_route method.route %>";<% else %>
+        config.url = "<%= method.route %>";<% end %>
+        config.method = '<%= method.http_method %>';<% if method.request["request_body"] %>
+        config.data = value;<% end %>
+        $http(config);
+      };
+<% end %>
+    }
+
+    return <%= endpoint.name.pretty_name %>Service;
+    /* eslint-enable camelcase */
+  }
+
+})();
