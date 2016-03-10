@@ -59,7 +59,7 @@ module SDKBuilder
 
         #capitalize first letter. leave rest untouched
         s.slice(0,1).capitalize + (s.slice(1..-1) || "")
-      end.compact.join('').gsub('-', '').gsub(',','')
+      end.compact.join('').gsub('-', '').gsub(',','').gsub(/[^a-zA-Z0-9]/,'')
     end
 
     def request_class_suffix
@@ -77,17 +77,9 @@ module SDKBuilder
     def release_version
       '195'
     end
-    
-    def self.get_string_format_route(route)
-      pieces = route.split('/').map do |part|
-        if part.start_with?(':')
-          "\" + #{part.slice(1..-1)} + \""
-        else
-          part
-        end
-      end
 
-      pieces.join('/')
+    def self.get_string_format_route(route)
+      route.gsub(/\:([a-zA-Z0-9_]*)/, '" + \1 + "')
     end
     
     implements LANGUAGE
