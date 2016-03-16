@@ -50,4 +50,15 @@ docker build -t helioncf/hcf-sdk-builder .
 
 ## Upgrading the target API version
 
-TBD
+1. Find the commit you need
+
+  - go to https://apidocs.cloudfoundry.org/
+  - lookup the second version in the drop down (that's the CC version you care about)
+	- note the first version number in the list
+	- next, go here: https://github.com/cloudfoundry/cf-release
+  - pick the correct tag that matches the first version number you noted, then go to the `src/` dir for that tag
+	- you'll find a `cloud_controller_ng` submodule that's at a specific commit (that's the commit you need)
+
+2. Bump the submodule to the desired commit
+
+3. Generate and test
