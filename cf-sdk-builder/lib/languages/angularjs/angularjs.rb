@@ -79,7 +79,7 @@ module SDKBuilder
     end
 
     def self.get_string_format_route(route)
-      route.gsub(/\:([a-zA-Z0-9_]*)/, '" + \1 + "')
+      route.gsub(/\:([a-zA-Z0-9_]*)/, '\' + \1 + \'')
     end
     
     implements LANGUAGE

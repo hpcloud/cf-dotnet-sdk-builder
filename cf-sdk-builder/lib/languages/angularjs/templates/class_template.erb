@@ -5,29 +5,43 @@
 
   angular
     .module('cloud-foundry.api')
-    .factory('cloud-foundry.api.<%= endpoint.name.pretty_name %>Service', <%= endpoint.name.pretty_name %>ServiceFactory);
+    .run(registerApi);
 
-  function <%= endpoint.name.pretty_name %>ServiceFactory() {
-    /* eslint-disable camelcase */
-    function <%= endpoint.name.pretty_name %>Service($http) {
+  registerApi.$inject = [
+    '$http',
+    'app.api.apiManager'
+  ];
+
+  function registerApi($http, apiManager) {
+    apiManager.register('cloud-foundry.api.<%= endpoint.name.pretty_name %>', new <%= endpoint.name.pretty_name %>Api($http));
+  }
+
+  function <%= endpoint.name.pretty_name %>Api($http) {
+    this.$http = $http;
+  }
+
+  /* eslint-disable camelcase */
+  angular.extend(<%= endpoint.name.pretty_name %>Api.prototype, {
 <% endpoint.methods.each_with_index do |method, index| 
 route_params = SDKBuilder::Method.get_route_params method.route
 method_params = method.parameters.map {|p| ("#{p.name}") }.join ', '
 %>
-      this.<%= method.name.pretty_name %> = function (<%= method_params.length > 0 ? method_params +', ' : '' %>params) {
-        var config = {};
-        config.params = params;<% if route_params.length > 0 %>
-        config.url = "<%= SDKBuilder::AngularJS.get_string_format_route method.route %>";<% else %>
-        config.url = "<%= method.route %>";<% end %>
-        config.method = '<%= method.http_method %>';<% if method.request["request_body"] %>
-        config.data = value;<% end %>
-        $http(config);
-      };
+   /*
+    * <%= method.description %><%(method.explanation || '').lines.each do |line| unless line.strip.empty? %>
+    * <%= line.strip %><% end end %>
+    * For detailed information, see online documentation at: <%= "http://apidocs.cloudfoundry.org/#{SDKBuilder::Config.language.release_version}/#{method.endpoint.name}/#{method.name}.html" %>
+    */
+    <%= method.name.pretty_name %>: function (<%= method_params.length > 0 ? method_params +', ' : '' %>params) {
+      var config = {};
+      config.params = params;<% if route_params.length > 0 %>
+      config.url = '/api/cf<%= SDKBuilder::AngularJS.get_string_format_route method.route %>';<% else %>
+      config.url = '/api/cf<%= method.route %>';<% end %>
+      config.method = '<%= method.http_method %>';<% if method.request["request_body"] %>
+      config.data = value;<% end %>
+      return this.$http(config);
+    }<% if (index < endpoint.methods.length - 1) %>,<% end %>
 <% end %>
-    }
-
-    return <%= endpoint.name.pretty_name %>Service;
-    /* eslint-enable camelcase */
-  }
+  });
+  /* eslint-enable camelcase */
 
 })();
