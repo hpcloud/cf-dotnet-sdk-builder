@@ -159,7 +159,7 @@ module SDKBuilder
       res = path.split('/').select { |part| part.start_with? ':' }.map { |param| param.gsub(/:/, '') }
 
       if !query.nil?
-        query_params = query.split('=').select { |part| part.start_with? ':' }.map { |param| param.gsub(/:/, '') }
+	query_params = query.split('&').map { |param| param.split('=')[0] }
         (res << query_params).flatten!
       end
 
