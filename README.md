@@ -13,12 +13,10 @@
 
 ## Running the SDK builder
 
-Run the following (note that if you're generating `csharp` output, you can
-omit the `language` variable).
-After the `docker run`, you'll be dropped in a shell.
+Run the following; after the `docker run`, you'll be dropped in a shell.
 
 ```bash
-docker run -v ${PWD}:/root/cf-dotnet-sdk-builder -it helioncf/hcf-ge-work
+docker run --name ge-work -v ${PWD}:/root/cf-dotnet-sdk-builder -it helioncf/hcf-ge-work
 cd cloud_controller_ng
 bundle install --no-deployment
 bundle exec rake tmp:clear db:drop db:create db:dev:migrate
