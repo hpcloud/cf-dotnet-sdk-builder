@@ -19,6 +19,7 @@ module SDKBuilder
 
       Dir[File.join(dir, '*.html')].inject({}) do |hash, file|
         action_name = File.basename(file, '.html')
+	next if action_name == "index"
         f = File.open(file)
         doc = Nokogiri::XML(f)
         action_example = parser.parse(doc.to_s.clean_guids)['example']
@@ -62,7 +63,7 @@ module SDKBuilder
     end
 
     def list_api
-      Dir.entries(Config.in_dir).inject({}) do |hash, entry|
+     Dir.entries(Config.in_dir).inject({}) do |hash, entry|
         if File.directory? File.join(Config.in_dir, entry) and !(entry =='.' || entry == '..')
           actions = get_actions(entry)
           if actions != nil and actions.size > 0
