@@ -31,9 +31,14 @@ rm -rf ${DIR}/../cloud_controller_ng/doc/api/
 mv -f ${DIR}/../cloud_controller_ng/spec/api/documentation/templates/rspec_api_documentation/html_example.mustache ${DIR}/html_example.mustache.bk
 cp ${DIR}/html_example.mustache ${DIR}/../cloud_controller_ng/spec/api/documentation/templates/rspec_api_documentation/
 
+#Remove api_version_spec
+mv -f ${DIR}/../cloud_controller_ng/spec/api/api_version_spec.rb ${DIR}/api_version_spec.rb
+
 bundle exec rake ${TASKS}
 
 mv -f ${DIR}/html_example.mustache.bk ${DIR}/../cloud_controller_ng/spec/api/documentation/templates/rspec_api_documentation/html_example.mustache
+
+mv -f ${DIR}/api_version_spec.rb ${DIR}/../cloud_controller_ng/spec/api/api_version_spec.rb
 
 # Delete existing auto-generated C# classes
 rm -rf ${DIR}/../Generated/**
@@ -48,7 +53,7 @@ ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc
 ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../tests/ --language ${language} --service cloudfoundry --versions v2 -t
 
 # V3
-ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../Generated/ --language ${language} --service cloudfoundry --versions v3
+#ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../Generated/ --language ${language} --service cloudfoundry --versions v3
 
 # Generate test classes
-ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../tests/ --language ${language} --service cloudfoundry --versions v3 -t
+#ruby ${DIR}/../cf-sdk-builder/bin/codegen --in ${DIR}/../cloud_controller_ng/doc/api/ --out ${DIR}/../tests/ --language ${language} --service cloudfoundry --versions v3 -t

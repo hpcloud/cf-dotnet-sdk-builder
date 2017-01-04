@@ -62,7 +62,7 @@ module SDKBuilder
     end
 
     def list_api
-      Dir.entries(Config.in_dir).inject({}) do |hash, entry|
+     Dir.entries(Config.in_dir).inject({}) do |hash, entry|
         if File.directory? File.join(Config.in_dir, entry) and !(entry =='.' || entry == '..')
           actions = get_actions(entry)
           if actions != nil and actions.size > 0
