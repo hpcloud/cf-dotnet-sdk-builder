@@ -19,7 +19,7 @@ After the `docker run`, you'll be dropped in a shell.
 
 ```bash
 docker run -v ${PWD}:/root/cf-dotnet-sdk-builder -it helioncf/hcf-sdk-builder
-language=lisp ./cf-doc-generation/update-code.sh
+language=csharp ./cf-doc-generation/update-code.sh
 ```
 
 You'll find your output (on your dev box): `./Generated` and `tests`
