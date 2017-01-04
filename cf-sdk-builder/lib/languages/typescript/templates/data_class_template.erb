@@ -1,0 +1,21 @@
+<% version = if is_v3 then "V3" else "V2" end %>
+export module Client<%=version%>Data
+{
+  export class <%= data_class.name %>
+  {
+   <% data_class.properties.each do |name, property| %>
+   private <%= name.downcase %>:<%= property[:type] %>;   
+
+   public get <%= name.pretty_name %>()
+   {
+    return this.<%= name.downcase %>;
+   }
+
+   public set <%= name.pretty_name %>(value:<%= property[:type] %>)
+   {
+    this.<%=name.downcase %>= value;
+   }
+
+   <% end %>
+  }
+}

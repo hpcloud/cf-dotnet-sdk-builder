@@ -26,6 +26,8 @@ require_relative '../lib/languages/csharp/csharp_types'
 require_relative '../lib/languages/go/go_types'
 require_relative '../lib/languages/csharp/csharp'
 require_relative '../lib/languages/go/go'
+require_relative '../lib/languages/typescript/typescript_types'
+require_relative '../lib/languages/typescript/typescript'
 
 require_relative '../lib/services/base_service'
 
@@ -45,7 +47,7 @@ opts = Slop.parse({:strict => true, :help => true}) do
 
   on 'i', 'in=', 'Required. Specifies base folder for input service data.'
   on 'o', 'out=', 'Required. Specifies the folder where the source code will be generated.'
-  on 'l', 'language=', 'Required. Specifies the language of the generated code: csharp/go.'
+  on 'l', 'language=', 'Required. Specifies the language of the generated code: csharp/go/typescript.'
   on 's', 'service=', 'Required. Specifies the service you want to generate code for: cloudfoundry/openstack.'
   on 'f', 'logfile=', 'Optional. A file in which to log messages. Will print to stdout if not specified.'
   on 'w', 'versions=', 'Optional. A comma separated list of the service versions to be included in the generated code.'
@@ -65,10 +67,10 @@ end
 
 
 case opts[:language]
-  when 'csharp', 'go'
+  when 'csharp', 'go', 'typescript'
     SDKBuilder::Config.language = opts[:language]
   else
-    $log.fatal("Invalid language specified. Valid options are 'csharp' and 'go'")
+    $log.fatal("Invalid language specified. Valid options are 'csharp', 'typescript' and 'go'")
     exit EXIT_CODE_BAD_LANGUAGE
 end
 
@@ -119,6 +121,45 @@ entities = SDKBuilder::Config.service.compile_endpoints
 data_class_template = SDKBuilder::Config.language.data_class_template
 class_template = SDKBuilder::Config.language.class_template
 ext = SDKBuilder::Config.language.file_extension
+
+if opts[:language] == 'typescript'
+
+ File.open(File.join(data_dir,"ClientData.#{ext}"), 'w') do |f|
+
+ entities.each do |name, endpoint|
+
+  $log.info("> Processing endpoint '#{name}'")
+  is_v3 = endpoint.methods.any? { |m| m.is_v3? }
+
+  data_classes = {}
+  data_classes["requests"] = {}
+  data_classes["responses"] = {}
+
+  endpoint.methods.each do |method|
+   
+    param_types = method.parameters.map {|p| p.type}
+
+    if method.return
+      param_types << method.return.type
+    end
+
+        param_types.each do |data_class|
+           next if data_class.name == 'string' || data_class.name == 'any' || data_class.name == 'number'
+           if data_class
+            if data_class.name.end_with? "Request" then
+               data_classes["requests"][data_class] = method.request["request_body"]
+            else
+              data_classes["responses"][data_class] = method.request["response_body"]
+            end
+
+            f.write data_class_template.result(binding)
+         end
+        end
+      
+   end
+ end
+end
+else
 
 entities.each do |name, endpoint|
 
@@ -207,6 +248,8 @@ entities.each do |name, endpoint|
       f.write SDKBuilder::Config.language.class_test_template.result(binding)
     end
   end
+end
+
 end
 
 exit EXIT_CODE_OK
