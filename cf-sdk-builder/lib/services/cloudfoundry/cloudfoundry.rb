@@ -19,7 +19,6 @@ module SDKBuilder
 
       Dir[File.join(dir, '*.html')].inject({}) do |hash, file|
         action_name = File.basename(file, '.html')
-	next if action_name == "index"
         f = File.open(file)
         doc = Nokogiri::XML(f)
         action_example = parser.parse(doc.to_s.clean_guids)['example']

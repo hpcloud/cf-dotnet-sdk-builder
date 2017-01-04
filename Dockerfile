@@ -2,7 +2,7 @@ from centurylink/mysql
 
 # Install packages for building ruby
 RUN apt-get update
-RUN apt-get install -y --force-yes build-essential curl git zlib1g-dev libssl-dev libreadline-dev libyaml-dev  libxml2-dev libxslt-dev libpq-dev libxslt-dev libxml2-dev zlib1g-dev ruby-mysql libmysqlclient-dev
+RUN apt-get install -y --force-yes build-essential curl git zlib1g-dev libssl-dev libreadline-dev libyaml-dev  libxml2-dev libxslt-dev libpq-dev libxslt-dev libxml2-dev zlib1g-dev ruby-mysql libmysqlclient-dev zip
 RUN apt-get clean
 
 # Install rbenv and ruby-build
